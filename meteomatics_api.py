@@ -15,8 +15,8 @@ db = client['forecasts']
 col = db['meteomatics']
 
 def getdata():
-    usrnm = 'joule_michas'
-    psw = 'KxN9lBXpbqU67'
+    usrnm = 'aueb_papatheodorou'
+    psw = 'TV4zpaYCf96nW'
 
     # photovoltaika
     # #prod = api.query_grid()
@@ -26,8 +26,98 @@ def getdata():
     ellinochori = api.query_api(
         f'https://api.meteomatics.com/{date}T00:00:00ZP2D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.389,26.4878/json',
         usrnm, psw)
+        
+    ammovouno = api.query_api(
+     f'https://api.meteomatics.com/{date}T00:00:00ZP5D:PT1H/solar_power_installed_capacity_1_tracking_type_azimuth-tracking:MW/41.5554,26.3131/json',
+     usrnm, psw)
     dateT = str(datetime.now() + timedelta(days=1)).split(' ')[0]
 
+
+    sterna = api.query_api(
+     f'https://api.meteomatics.com/{date}T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.555,26.4342/json',
+     usrnm, psw)
+     
+     
+    mdoksipara1 = api.query_api(
+     f'https://api.meteomatics.com/{date}T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.5431,26.2712/json',
+     usrnm, psw)
+    mdoksipara2 = api.query_api(
+     f'https://api.meteomatics.com/{date}T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.5273,26.2612/json',
+     usrnm, psw)
+    mdoksipara3 = api.query_api(
+     f'https://api.meteomatics.com/{date}T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.5506,26.2584/json',
+     usrnm, psw)
+
+    
+    
+    mdoksipara2_up = []
+    mdoksipara2_l = mdoksipara2.json()['data'][0]['coordinates'][0]['dates']
+    for i in mdoksipara2_l:
+
+        d = i['date']
+        d = datetime.strptime(d,'%Y-%m-%dT%H:%M:%SZ')
+        d = d + timedelta(hours=3)
+        d = str(d)
+        if dateT in d:
+            mdoksipara2_up.append([d, 1000 * i['value']])
+
+
+
+    mdoksipara3_up = []
+    mdoksipara3_l = mdoksipara3.json()['data'][0]['coordinates'][0]['dates']
+    for i in mdoksipara3_l:
+
+        d = i['date']
+        d = datetime.strptime(d,'%Y-%m-%dT%H:%M:%SZ')
+        d = d + timedelta(hours=3)
+        d = str(d)
+        if dateT in d:
+            mdoksipara3_up.append([d, 1000 * i['value']])
+	
+	
+	
+    mdoksipara1_up = []
+    mdoksipara1_l = mdoksipara1.json()['data'][0]['coordinates'][0]['dates']
+    for i in mdoksipara1_l:
+
+        d = i['date']
+        d = datetime.strptime(d,'%Y-%m-%dT%H:%M:%SZ')
+        d = d + timedelta(hours=3)
+        d = str(d)
+        if dateT in d:
+            mdoksipara1_up.append([d, 1000 * i['value']])
+
+
+
+    sterna_up = []
+    sterna_l = sterna.json()['data'][0]['coordinates'][0]['dates']
+    for i in sterna_l:
+
+        d = i['date']
+        d = datetime.strptime(d,'%Y-%m-%dT%H:%M:%SZ')
+        d = d + timedelta(hours=3)
+        d = str(d)
+        if dateT in d:
+            sterna_up.append([d, 1000 * i['value']])
+
+
+
+	
+    ammovouno_up = []
+    ammovouno_l = ammovouno.json()['data'][0]['coordinates'][0]['dates']
+    for i in ammovouno_l:
+
+        d = i['date']
+        d = datetime.strptime(d,'%Y-%m-%dT%H:%M:%SZ')
+        d = d + timedelta(hours=3)
+        d = str(d)
+        if dateT in d:
+            ammovouno_up.append([d, 1000 * i['value']])
+
+
+    
+	
+    
     ladi_up = []
     ladi_l = ladi.json()['data'][0]['coordinates'][0]['dates']
     for i in ladi_l:
@@ -52,7 +142,11 @@ def getdata():
     up = {
         'ladi': ladi_up,
         'ellinochori': ellinochori_up,
-
+	'ammovouno':ammovouno_up,
+	'sterna':sterna_up,
+	'mdoksipara1':mdoksipara1_up,
+	'mdoksipara2':mdoksipara2_up,
+	'mdoksipara3':mdoksipara3_up,
         'time': date + ' ' + timestr
     }
     return up
@@ -65,28 +159,14 @@ col.insert_one(up)
 
 
 ########################################
-# ammovouno = api.query_api(
-#     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_1_tracking_type_azimuth-tracking:MW/41.5554,26.3131/json',
-#     usrnm, psw)
-#
+
 # isaakio = api.query_api(
 #     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_1_tracking_type_azimuth-tracking:MW/41.3606,26.5487/json',
 #     usrnm, psw)
 # poimeniko = api.query_api(
 #     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.4729,26.379/json',
 #     usrnm, psw)
-# sterna = api.query_api(
-#     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.555,26.4342/json',
-#     usrnm, psw)
-# mdoksipara1 = api.query_api(
-#     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.5431,26.2712/json',
-#     usrnm, psw)
-# mdoksipara2 = api.query_api(
-#     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.5273,26.2612/json',
-#     usrnm, psw)
-# mdoksipara3 = api.query_api(
-#     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.5506,26.2584/json',
-#     usrnm, psw)
+# 
 # eugeniko = api.query_api(
 #     'https://api.meteomatics.com/2020-08-28T00:00:00ZP5D:PT1H/solar_power_installed_capacity_0.5_tracking_type_fixed_orientation_180_tilt_28:MW/41.4345,26.3586/json',
 #     usrnm, psw)

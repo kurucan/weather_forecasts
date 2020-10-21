@@ -48,5 +48,5 @@ for filename in ftp.nlst(filematch):
             .close()
 
 print(fordb)
-col.insert(fordb)
+col.insert_one(fordb)
 ftp.close()
